@@ -1,0 +1,16 @@
+{{#yield-stylesheets}}
+<link rel="stylesheet" href="/static/css/upload.css">
+{{/yield-stylesheets}}
+
+{{#yield-scripts}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.full.min.js"></script>
+<script src="/static/lib/build/react.js"></script>
+<script src="/static/lib/build/react-dom.js"></script>
+{{/yield-scripts}}
+
+{{#yield-content}}
+<div class="container">
+</div>
+
+<script type="text/babel" src="/static/js/upload.jsx"></script>
+{{/yield-content}}
