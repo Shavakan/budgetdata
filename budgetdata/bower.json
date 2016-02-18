@@ -1,0 +1,19 @@
+{
+  "name": "budgetdata",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Shavakan <chiyah92@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/BudgetWiser/budgetdata",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/bower_components",
+    "test",
+    "tests"
+  ]
+}
