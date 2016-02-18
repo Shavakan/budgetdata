@@ -13,13 +13,21 @@ var FileInputForm = React.createClass({
   drop: function(e) {
     e.stopPropagation();
     e.preventDefault();
-    console.log(e);
     this.handleFiles(e.dataTransfer.files[0]);
   },
   handleFiles: function(f) {
     this.setState({
       fileName: f.name
     });
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var data = e.target.result;
+      var workbook = XLSX.read(data, {type: 'binary'});
+      var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      var json = XLSX.utils.sheet_to_json(worksheet);
+      this.props.setData(json);
+    }.bind(this);;
+    reader.readAsBinaryString(f);
   },
   getInitialState: function() {
     return {
@@ -46,8 +54,56 @@ var FileInputForm = React.createClass({
   }
 });
 
+var XLSParsedTable = React.createClass({
+  submit: function() {
+
+  },
+  render: function() {
+    return (
+      <div id="table">
+        <button className="btn btn-primary pull-right" type="submit" onClick={this.submit}>제출</button>
+      </div>
+    );
+  }
+});
+
+var Container = React.createClass({
+  setData: function(data) {
+    if (this.state.table == undefined) {
+      var container = document.getElementById('table');
+      var table = new Handsontable(container, {
+        data: this.state.data,
+        rowHeaders: true,
+        colHeaders: true
+      });
+      this.setState({
+        table: table
+      });
+    }
+    this.setState({
+      data: data,
+    });
+    this.state.table.loadData(data);
+  },
+  setTable: function(table) {
+  },
+  getInitialState: function() {
+    return {
+      data: [],
+      table: undefined
+    };
+  },
+  render: function() {
+    return (
+      <div>
+        <FileInputForm setData={this.setData} />
+        <XLSParsedTable setTable={this.setTable} />
+      </div>
+    );
+  }
+});
+
 ReactDOM.render(
-  <FileInputForm />,
+  <Container />,
   document.getElementsByClassName("container")[0]
 );
-

@@ -5,4 +5,5 @@ div#dropInput {
     padding: 25px;
     margin: 15px;
     text-align: center;
+    cursor: default;
 }
