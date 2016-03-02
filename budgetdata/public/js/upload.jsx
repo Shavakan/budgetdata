@@ -54,14 +54,78 @@ var FileInputForm = React.createClass({
   }
 });
 
-var XLSParsedTable = React.createClass({
+var UserPrompt = React.createClass({
   submit: function() {
-
+    $.ajax({
+      type: 'POST',
+      url: '/upload',
+      dataType: 'JSON', 
+      data: {
+        length: this.props.data.length,
+      },
+      success: function(data) {
+        console.log(data);
+        /*
+        // Original code
+        var error_list = [];
+        for (var i=0; i<this.props.data.length; i+=10) {
+          var data_chunk = [];
+          for (var j=i; j<i+10 && j<this.props.data.length; j++) {
+            data_chunk.push(this.props.data[j]);
+          }
+          $.ajax({
+            type: 'PUT',
+            url: '/upload',
+            dataType: 'JSON',
+            data: {
+              index: i,
+              data: data_chunk
+            },
+            error: function(data) {
+              console.log('error:' + data.msg)
+              error_list.push(data.msg);
+            }
+          });
+          console.log(error_list);
+        }
+        */
+        // Code for test
+        $.ajax({
+          type: 'PUT',
+          url: '/upload',
+          dataType: 'JSON',
+          data: {
+            index: 0,
+            data: this.props.data[0]
+          },
+          error: function(data) {
+            console.log('PUT error: ' + 0);
+            console.log(data);
+          }
+        });
+      }.bind(this),
+      error: function(data) {
+        console.log(data);
+        this.submit();
+      }.bind(this)
+    });
   },
   render: function() {
     return (
-      <div id="table">
+      <div id="userPrompt">
         <button className="btn btn-primary pull-right" type="submit" onClick={this.submit}>제출</button>
+      </div>
+    );
+  }
+});
+
+var XLSParsedTable = React.createClass({
+  render: function() {
+    return (
+      <div>
+        <div id="table"
+          style={{marginTop: 20 + 'px'}}
+        ></div>
       </div>
     );
   }
@@ -85,8 +149,6 @@ var Container = React.createClass({
     });
     this.state.table.loadData(data);
   },
-  setTable: function(table) {
-  },
   getInitialState: function() {
     return {
       data: [],
@@ -97,7 +159,8 @@ var Container = React.createClass({
     return (
       <div>
         <FileInputForm setData={this.setData} />
-        <XLSParsedTable setTable={this.setTable} />
+        <UserPrompt data={this.state.data} />
+        <XLSParsedTable />
       </div>
     );
   }
