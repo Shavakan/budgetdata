@@ -1,7 +1,15 @@
 var express = require('express');
 var router = express.Router();
 var MongoClient = require('mongodb').MongoClient;
+var mongoose = require('mongoose');
+var model = require('../models/budget');
 var Q = require('q');
+
+var Region = model.Region;
+var Budget = model.Budget;
+var Category = model.Category;
+var Department = model.Department;
+var Program = model.Program;
 
 router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
