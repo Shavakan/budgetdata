@@ -65,6 +65,12 @@ app.use(function(err, req, res, next) {
   });
 });
 
+/* Mongoose MongoDB connection setup */
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'mongoose connection error: '));
+db.once('open', function() {
+  require('./models/budget');
+});
 mongoose.connect('mongodb://localhost:27017/budgetdata');
 
 
