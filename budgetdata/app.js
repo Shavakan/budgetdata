@@ -17,7 +17,7 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
-app.set('layout', 'layout')
+app.set('layout', 'layout');
 app.enable('view cache');
 app.engine('html', require('hogan-express'));
 
@@ -46,7 +46,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
+  app.use(function(err, req, res) {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
@@ -57,7 +57,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
@@ -71,7 +71,7 @@ db.on('error', console.error.bind(console, 'mongoose connection error: '));
 db.once('open', function() {
   require('./models/budget');
 });
-mongoose.connect('mongodb://localhost:27017/budgetdata');
+mongoose.connect('mongodb://localhost:27017/budgetdata-test');
 
 
 module.exports = app;

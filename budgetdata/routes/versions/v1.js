@@ -1,36 +1,43 @@
 var express = require('express');
 var router = express.Router();
 var model = require('../../models/budget');
-var mongoose = require('mongoose');
 
 var Region = model.Region;
-var Budget = model.Budget;
-var Category = model.Category;
-var Program = model.Program;
 
-var db = mongoose.connection;
+router.use(function timeLog(req, res, next) {
+  console.log('Time: ', Date.now());
+  next();
+});
 
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
   res.send('BudgetData API Version 1');
 });
 
-// TODO: REGEXify hardcoded URL
-router.get('/seoul/2016/', function(req, res) {
+router.get('/budget/[A-z]+/[0-9]+/', function(req, res) {
   Region.findOne(
     {
-      'name_en': 'Seoul',
-      'budgets.year': 2016
+      'name_en': req.url.toString().split('/')[2].charAt(0).toUpperCase() + req.url.toString().split('/')[2].slice(1),
+      'budgets.year': req.url.toString().split('/')[3]
     },
     {
       '_id': false,
       'name_en': false,
-      'name_kr': false,
+      'name_kr': false
     },
     function(err, results) {
-      if (err) return console.error(err);
-      
-      res.json(results.budgets);
-  });
+      if (err) {
+        res.status('500').send('DB Internal Error');
+        return console.error(err);
+      }
+
+      console.log(results);
+      if (results) {
+        res.json(results.budgets);
+      } else {
+        res.status('400').send('Bad URL Request');
+      }
+    }
+  );
 });
 
 /* Request URL error handling */
