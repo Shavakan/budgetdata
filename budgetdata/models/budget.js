@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var ProgramSchema = new Schema({
+var ProgramSchema = new Schema();
+ProgramSchema.add({
   name: String,
   value: Number
 });
