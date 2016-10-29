@@ -10,7 +10,6 @@ var mongoose = require('mongoose');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var upload = require('./routes/upload');
-var apis = require('./routes/apis');
 
 var app = express();
 
@@ -29,10 +28,10 @@ app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
 app.use(cookieParser());
 app.use('/static/', express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
+// app.use('/', routes);
+app.use('/', express.static(path.join(__dirname, 'api/swagger')));
 app.use('/upload', upload);
 app.use('/users', users);
-app.use('/apis', apis);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -73,5 +72,19 @@ db.once('open', function() {
 });
 mongoose.connect('mongodb://localhost:27017/budgetdata-test');
 
+/* Swagger setup */
+var SwaggerExpress = require('swagger-express-mw');
+var SwaggerUi = require('swagger-tools/middleware/swagger-ui');
+var config = {
+  appRoot: __dirname
+};
+
+SwaggerExpress.create(config, function(err, swaggerExpress) {
+  if (err) { throw err; }
+
+  app.use(SwaggerUi(swaggerExpress.runner.swagger));
+
+  swaggerExpress.register(app);
+});
 
 module.exports = app;

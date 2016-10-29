@@ -1,0 +1,260 @@
+swagger: '2.0'
+info:
+  title: BudgetWiser BudgetData API
+  description: Access government budget data with BudgetData API
+  contact:
+    name: ChangWon Lee
+    email: chiyah92@gmail.com
+    url: https://shavakan.github.io
+  # TODO: Establish a license
+  # license:
+    # name: Apache 2.0
+    # url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: "0.1.0"
+# the domain of the service
+host: budgetdata.budgetwiser.org
+schemes:
+  - https
+basePath: /api/v1
+produces:
+  - application/json
+paths:
+  /regions:
+    get:
+      summary: Regions
+      description: |
+        The Regions endpoint returns the list of South Korean government administrative districts whose budget data can be offered. The response includes the display name of the district (in Korean), and the code name of the district (in English).
+      responses:
+        200:
+          description: An array of regions
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Region"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+  /{region}/:
+    get:
+      summary: Budgets
+      description: |
+        The Budgets endpoint returns the list of years whose budget data can be offered for a specific Region. The response includes an array of years. 
+      parameters:
+        - name: region
+          in: path
+          description: A valid Region code name, obtained from the Regions endpoint
+          required: true
+          type: string
+      responses:
+        200:
+          description: An array of budgets
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Budget"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+  /{region}/{year}/categories:
+    get:
+      summary: Categories
+      description: |
+        The Categories endpoint returns the list of budget categories for a specific budget region and year. The response includes an array of all categories that meet the query, if it exists.
+      parameters:
+        - name: region
+          in: path
+          description: A valid Region code name, obtained from the Regions endpoint
+          required: true
+          type: string
+        - name: year
+          in: path
+          description: A valid Budget year, obtained from the Budgets endpoint
+          required: true
+          type: string
+        - name: name
+          in: query
+          description: A possible category name
+          required: false
+          type: string
+      responses:
+        200:
+          description: An array of categories
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Category"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+  /{region}/{year}/departments:
+    get:
+      summary: Departments
+      description: |
+        The Departments endpoint returns the list of departments of government administrative district for a specific budget region and year. The response includes an array of all departments that meet the query, if it exists.
+      parameters:
+        - name: region
+          in: path
+          description: A valid Region code name, obtained from the Regions endpoint
+          required: true
+          type: string
+        - name: year
+          in: path
+          description: A valid Budget year, obtained from the Budgets endpoint
+          required: true
+          type: string
+        - name: name
+          in: query
+          description: A possible department
+          required: false
+          type: string
+      responses:
+        200:
+          description: An array of departments
+          schema: 
+            type: array
+            items:
+              $ref: "#/definitions/Department"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+  /{region}/{year}/programs:
+    get:
+      summary: Programs
+      description: |
+        The Programs endpoint returns the list of budget programs for for a specific budget region and year. The response include an array of all programs the meet the query, if it exists.
+      parameters:
+        - name: region
+          in: path
+          description: A valid Region code name, obtained from the Regions endpoint
+          required: true
+          type: string
+        - name: year
+          in: path
+          description: A valid Budget year, obtained from the Budgets endpoint
+          required: true
+          type: string
+        - name: category
+          in: query
+          description: A category name, obtained from the Categories endpoint
+          required: false
+          type: string
+        - name: department
+          in: query
+          description: A department name, obtained from teh Departments endpoint
+          required: false
+          type: string
+        - name: name
+          in: query
+          description: A possible program name
+          required: false
+          type: string
+      responses:
+        200:
+          description: An array of programs
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Program"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+definitions:
+  Region:
+    type: object
+    required:
+      - name_kr
+      - name_en
+    properties:
+      name_kr:
+        type: string
+        description: Display name of a region (in Korean).
+      name_en:
+        type: string
+        description: Code name of a region (in English). MUST use this property for other API calls.
+  Budget:
+    type: object
+    required:
+      - year
+    properties:
+      year:
+        type: integer
+        format: int32
+        description: Year of the source budget data.
+  Category:
+    type: object
+    required:
+      - name
+      - value
+    properties:
+      name:
+        type: string
+        description: Name of a category to a budget program.
+      value:
+        type: number
+        format: int64
+        description: Net value of budget used by a budget program category.
+      superiors:
+        type: array
+        items:
+          $ref: "#/definitions/Category"
+      subordinates:
+        type: array
+        items:
+          $ref: "#/definitions/Category"
+  Department:
+    type: object
+    required:
+      - name
+      - value
+    properties:
+      name:
+        type: string
+        description: Name of a department in an administrative district.
+      value:
+        type: number
+        format: int64
+        description: Net value of budget used by an administrative districtive.
+      superiors:
+        type: array
+        items:
+          $ref: "#/definitions/Department"
+      subordinates:
+        type: array
+        items:
+          $ref: "#/definitions/Department"
+  Program:
+    type: object
+    required:
+      - name
+      - value
+    properties:
+      name:
+        type: string
+        description: Name of a budget program.
+      value:
+        type: number
+        format: int64
+        description: Value of a budget program in currency specified by the containing Budget object.
+      categories:
+        type: array
+        items:
+          $ref: "#/definitions/Category"
+      departments:
+        type: array
+        items:
+          $ref: "#/definitions/Department"
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string

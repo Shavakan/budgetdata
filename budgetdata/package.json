@@ -23,6 +23,7 @@
     "react-dom": "^0.14.7",
     "serve-favicon": "~2.3.0",
     "supervisor": "^0.9.1",
+    "swagger-tools": "^0.10.1",
     "xlsx": "^0.8.0"
   }
 }
