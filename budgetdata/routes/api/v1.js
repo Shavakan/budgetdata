@@ -4,12 +4,6 @@ var model = require('../../models/budget');
 
 var Region = model.Region;
 
-/* Time logger */
-router.use(function timeLog(req, res, next) {
-  console.log('Time: ', Date.now());
-  next();
-});
-
 /* Finds list of all budgets */
 router.route('/')
   .get(function(req, res) {

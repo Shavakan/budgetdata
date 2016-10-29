@@ -6,11 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 
-// route files
-var routes = require('./routes/index');
-var users = require('./routes/users');
-var upload = require('./routes/upload');
-
 var app = express();
 
 // view engine setup
@@ -26,22 +21,22 @@ app.use(logger('dev'));
 app.use(bodyParser.json({ limit: '5mb' }));
 app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
 app.use(cookieParser());
-app.use('/static/', express.static(path.join(__dirname, 'public')));
 
-// app.use('/', routes);
-app.use('/', express.static(path.join(__dirname, 'api/swagger')));
-app.use('/upload', upload);
-app.use('/users', users);
+/* url routing configuration redirection */
+var routes = require('./routes/index')(app);
+
+/* file hosting and http error handling */
+// host static files
+app.use('/static/', express.static(path.join(__dirname, 'public')));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+var err = new Error('Not Found');
+err.status = 404;
+next(err);
 });
 
-// error handlers
-
+/* error handlers */
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
